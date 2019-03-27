@@ -15,6 +15,7 @@ namespace WebJobLogCleanup
 {
     public static class Function1
     {
+        private static string User = System.Environment.GetEnvironmentVariable("applicationuser");
         private static string StorageAccount = System.Environment.GetEnvironmentVariable("StorageAccount");
 
 
@@ -22,6 +23,7 @@ namespace WebJobLogCleanup
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)]HttpRequestMessage req, TraceWriter log)
         {
             log.Info("C# HTTP trigger function processed a request.");
+            log.Info($"Shhhhh.. it's a secret User: {User}");
             log.Info($"Shhhhh.. it's a secret Another: {StorageAccount}");
 
             var blobs = BlobBatch(StorageAccount, "azure-webjobs-hosts", "output-logs", -30);
