@@ -1,0 +1,361 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "para_application_name": {
+      "type": "string"
+    },
+    "para_vanity_name": {
+      "type": "string"
+    },
+    "para_target_env": {
+      "type": "string"
+    },
+    "para_acronym_region": {
+      "type": "string"
+    },
+    "para_acronym_resgrp": {
+      "type": "string"
+    },
+    "para_acronym_appsvc": {
+      "type": "string"
+    },
+    "para_acronym_svcpln": {
+      "type": "string"
+    },
+    "para_acronym_stract": {
+      "type": "string"
+    },
+    "para_acronym_kv": {
+      "type": "string"
+    },
+    "para_acronym_azfunc": {
+      "type": "string"
+    },
+    "para_acronym_appin": {
+      "type": "string"
+    },
+    "para_acronym_webapp": {
+      "type": "string"
+    },
+    "para_kvSecretsObject": {
+      "type": "object",
+      "defaultValue": "{}"
+    }
+  },
+  "variables": {
+    "var_sub_id": "[subscription().subscriptionId]",
+    "var_ten_id": "[subscription().tenantId]",
+
+    "var_env_region": "[concat(parameters('para_target_env'), '-', parameters('para_acronym_region'))]",
+    "var_public_url": "[concat(parameters('para_target_env'), '.', parameters('para_application_name'), '.', parameters('para_vanity_name'))]",
+    "var_str_name": "[concat( tolower(parameters('para_application_name')), parameters('para_acronym_stract'), parameters('para_target_env'), parameters('para_acronym_region'))]",
+    "var_str_resId": "[resourceId(resourceGroup().Name,'Microsoft.Storage/storageAccounts', variables('var_str_name'))]",
+    "var_kv_name": "[concat(parameters('para_application_name'), '-', parameters('para_acronym_kv'), '-', variables('var_env_region'))]",
+    "var_azf_name": "[concat(parameters('para_application_name'), '-', parameters('para_acronym_azfunc'),'-', variables('var_env_region'))]",
+    "var_appin_name": "[concat(parameters('para_application_name'), '-',parameters('para_acronym_appin'),'-', variables('var_env_region'))]",
+    "var_hstpln_group": "[concat(parameters('para_application_name'), '-', parameters('para_acronym_resgrp'), '-', variables('var_env_region'))]",
+    "var_hstpln_env": "[concat(parameters('para_application_name'), '-', parameters('para_acronym_appsvc'), '-', variables('var_env_region'))]",
+    "var_hstpln_name": "[concat(parameters('para_application_name'), '-', parameters('para_acronym_svcpln'), '-', variables('var_env_region'))]",
+    "var_webapp_name": "[concat(parameters('para_application_name'), '-',parameters('para_acronym_webapp'),'-', variables('var_env_region'))]",
+    "var_webapp_hstpln": "[concat('/subscriptions/', variables('var_sub_id'), '/resourceGroups/', variables('var_hstpln_group'), '/providers/Microsoft.Web/serverfarms/', variables('var_hstpln_name'))]",
+
+    // This ony works as the Azure Function is MSI enabled, which creates the entry in AD.
+    "var_svc_prin": "[concat(resourceId('Microsoft.Web/sites', variables('var_azf_name')),'/providers/Microsoft.ManagedIdentity/Identities/default')]"
+  },
+  "resources": [
+    {
+      "apiVersion": "2018-07-01",
+      "dependsOn": [],
+      "kind": "StorageV2",
+      "location": "[resourceGroup().location]",
+      "name": "[variables('var_str_name')]",
+      "properties": {
+        "accessTier": "Hot",
+        "encryption": {
+          "services": {
+            "file": {
+              "enabled": true
+            },
+            "blob": {
+              "enabled": true
+            }
+          },
+          "keySource": "Microsoft.Storage"
+        },
+        "networkAcls": {
+          "bypass": "AzureServices",
+          "virtualNetworkRules": [],
+          "ipRules": [],
+          "defaultAction": "Allow"
+        },
+        "supportsHttpsTrafficOnly": false
+      },
+      "resources": [],
+      "scale": null,
+      "sku": {
+        "name": "Standard_LRS",
+        "tier": "Standard"
+      },
+      "tags": {
+        "displayName": "StorageAcct"
+      },
+      "type": "Microsoft.Storage/storageAccounts"
+    },
+    {
+      "apiVersion": "2015-05-01",
+      "dependsOn": [],
+      "kind": "functionapp",
+      "location": "[resourceGroup().location]",
+      "name": "[variables('var_appin_name')]",
+      "properties": {
+        "Application_Type": "web",
+        "ApplicationId": "[variables('var_appin_name')]"
+      },
+      "tags": {
+        "[concat('hidden-link:', resourceGroup().id, '/providers/Microsoft.Web/sites/', variables('var_azf_name'))]": "Resource",
+        "displayName": "AppInsightsComponent"
+      },
+      "type": "Microsoft.Insights/components"
+    },
+    {
+      "apiVersion": "2016-09-01",
+      "dependsOn": [],
+      "kind": "functionapp",
+      "location": "[resourceGroup().location]",
+      "name": "[variables('var_hstpln_name')]",
+      "properties": {
+        "name": "[variables('var_hstpln_name')]",
+        "workerTierName": null,
+        "adminSiteName": null,
+        "hostingEnvironmentProfile": null,
+        "perSiteScaling": false,
+        "reserved": false,
+        "targetWorkerCount": 0,
+        "targetWorkerSizeId": 0
+      },
+      "scale": null,
+      "sku": {
+        "name": "Y1",
+        "tier": "Dynamic",
+        "size": "Y1",
+        "family": "Y",
+        "capacity": 0
+      },
+      "tags": {
+        "displayName": "Service Plan"
+      },
+      "type": "Microsoft.Web/serverfarms"
+    },
+    {
+      "apiVersion": "2016-08-01",
+      "dependsOn": [
+        "[concat('Microsoft.Storage/storageAccounts/', variables('var_str_name'))]"
+      ],
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "kind": "functionapp",
+      "location": "[resourceGroup().location]",
+      "name": "[variables('var_azf_name')]",
+      "properties": {
+        "name": "[variables('var_azf_name')]",
+        "siteConfig": {
+          "appSettings": [
+            {
+              "name": "AzureWebJobsDashboard",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('var_str_name'),';AccountKey=',listKeys(variables('var_str_resId'),'2015-05-01-preview').key1) ]"
+            },
+            {
+              "name": "AzureWebJobsStorage",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('var_str_name'),';AccountKey=',listKeys(variables('var_str_resId'),'2015-05-01-preview').key1) ]"
+            },
+            {
+              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+              "value": "[reference(concat('microsoft.insights/components/', variables('var_appin_name'))).InstrumentationKey]"
+            }
+          ],
+          "alwaysOn": false
+        },
+        "clientAffinityEnabled": false,
+        "serverFarmId": "[variables('var_hstpln_name')]",
+        "hostingEnvironment": "[variables('var_hstpln_env')]",
+        "hostNameSslStates": [
+        ]
+      },
+      "resources": [
+        {
+          "apiVersion": "2015-08-01",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites', variables('var_azf_name'))]",
+            "[resourceId('Microsoft.KeyVault/vaults/', variables('var_kv_name'))]",
+            "secretsCopy"
+          ],
+          "name": "appsettings",
+          "properties": {
+            "WEBSITE_ENABLE_SYNC_UPDATE_SITE": "true",
+            "AnotherSecret": "[concat('@Microsoft.KeyVault(SecretUri=', reference('applicationuser').secretUriWithVersion, ')')]",
+            "StorageAccount": "[concat( '@Microsoft.KeyVault(SecretUri=', reference('StorageAccount').secretUriWithVersion, ')')]"
+
+          },
+          "tags": {
+            "displayName": "AppSettings"
+          },
+          "type": "config"
+        }
+      ],
+      "tags": {
+        "displayName": "Az Function"
+      },
+      "type": "Microsoft.Web/sites"
+    },
+    {
+      "apiVersion": "2016-10-01",
+      "dependsOn": [
+        "[concat('Microsoft.Web/sites/', variables('var_azf_name'))]"
+      ],
+      "location": "[resourceGroup().location]",
+      "name": "[variables('var_kv_name')]",
+      "properties": {
+        "sku": {
+          "family": "A",
+          "name": "Standard"
+        },
+        "tenantId": "[variables('var_ten_id')]",
+        "accessPolicies": [
+          {
+            "tenantId": "[variables('var_ten_id')]",
+            "objectId": "[reference(variables('var_svc_prin'), '2015-08-31-PREVIEW').principalId]",
+            "permissions": {
+              "keys": [
+                "Get",
+                "List",
+                "Update",
+                "Create",
+                "Import",
+                "Delete",
+                "Recover",
+                "Backup",
+                "Restore",
+                "Decrypt",
+                "Encrypt",
+                "UnwrapKey",
+                "WrapKey",
+                "Verify",
+                "Sign",
+                "Purge"
+              ],
+              "secrets": [
+                "Get",
+                "List",
+                "Set",
+                "Delete",
+                "Recover",
+                "Backup",
+                "Restore",
+                "Purge"
+              ],
+              "certificates": [
+                "Get",
+                "List",
+                "Update",
+                "Create",
+                "Import",
+                "Delete",
+                "Recover",
+                "Backup",
+                "Restore",
+                "ManageContacts",
+                "ManageIssuers",
+                "GetIssuers",
+                "ListIssuers",
+                "SetIssuers",
+                "DeleteIssuers",
+                "Purge"
+              ]
+            }
+          },
+          {
+            "tenantId": "[variables('var_ten_id')]",
+            "objectId": "cb3baa6a-f545-4caf-bd91-ba457692cbb9",
+            "permissions": {
+              "keys": [
+                "Get",
+                "List",
+                "Update",
+                "Create",
+                "Import",
+                "Delete",
+                "Recover",
+                "Backup",
+                "Restore",
+                "Decrypt",
+                "Encrypt",
+                "UnwrapKey",
+                "WrapKey",
+                "Verify",
+                "Sign",
+                "Purge"
+              ],
+              "secrets": [
+                "Get",
+                "List",
+                "Set",
+                "Delete",
+                "Recover",
+                "Backup",
+                "Restore",
+                "Purge"
+              ],
+              "certificates": [
+                "Get",
+                "List",
+                "Update",
+                "Create",
+                "Import",
+                "Delete",
+                "Recover",
+                "Backup",
+                "Restore",
+                "ManageContacts",
+                "ManageIssuers",
+                "GetIssuers",
+                "ListIssuers",
+                "SetIssuers",
+                "DeleteIssuers",
+                "Purge"
+              ]
+            }
+          }
+        ],
+            "enabledForDeployment": false,
+            "enabledForDiskEncryption": false,
+            "enabledForTemplateDeployment": false
+      },
+      "scale": null,
+      "tags": {
+        "displayName": "Key Vault"
+      },
+      "type": "Microsoft.KeyVault/vaults"
+    },
+    {
+      "apiVersion": "2015-06-01",
+      "copy": {
+        "name": "secretsCopy",
+        "count": "[length(parameters('para_kvSecretsObject').secrets)]"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.KeyVault/vaults/', variables('var_kv_name'))]"
+      ],
+      "name": "[concat(variables('var_kv_name'), '/', parameters('para_kvSecretsObject').secrets[copyIndex()].secretName)]",
+      "properties": {
+        "value": "[parameters('para_kvSecretsObject').secrets[copyIndex()].secretValue]"
+      },
+      "tags": {
+        "displayName": "Key Vault Secrets"
+      },
+      "type": "Microsoft.KeyVault/vaults/secrets"
+    }
+  ],
+  "outputs": {}
+}

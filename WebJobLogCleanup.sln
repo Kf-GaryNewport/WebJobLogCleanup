@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.421
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebJobLogCleanup", "FunctionAppTemplate\WebJobLogCleanup.csproj", "{FBB3AA1A-3D33-40CA-9339-E957755A00C8}"
+EndProject
+Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "ArmDeployment", "ArmDeployment\ArmDeployment.deployproj", "{649E2C32-ED38-4FFE-8F1E-EFB60EDCBC20}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{724FC807-7B4C-47B7-950B-FD73C3CE6C22}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FBB3AA1A-3D33-40CA-9339-E957755A00C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBB3AA1A-3D33-40CA-9339-E957755A00C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBB3AA1A-3D33-40CA-9339-E957755A00C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBB3AA1A-3D33-40CA-9339-E957755A00C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{649E2C32-ED38-4FFE-8F1E-EFB60EDCBC20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{649E2C32-ED38-4FFE-8F1E-EFB60EDCBC20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{649E2C32-ED38-4FFE-8F1E-EFB60EDCBC20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{649E2C32-ED38-4FFE-8F1E-EFB60EDCBC20}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {671801A2-8ED5-4ED9-A536-5CDDECC1857C}
+	EndGlobalSection
+EndGlobal

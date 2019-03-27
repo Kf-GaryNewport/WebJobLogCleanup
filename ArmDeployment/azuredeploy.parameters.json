@@ -1,0 +1,32 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "para_application_name": { "value": "LogCleanup" },
+    "para_vanity_name": { "value": "knightfrank.com" },
+    "para_target_env": { "value": "dev" },
+    "para_acronym_region": { "value": "ne" },
+    "para_acronym_resgrp": { "value": "resgrp" },
+    "para_acronym_appsvc": { "value": "appsvc" },
+    "para_acronym_svcpln": { "value": "svcpln" },
+    "para_acronym_stract": { "value": "str" },
+    "para_acronym_kv": { "value": "kv" },
+    "para_acronym_azfunc": { "value": "fn" },
+    "para_acronym_appin": { "value": "appins" },
+    "para_acronym_webapp": { "value": "webapp" },
+    "para_kvSecretsObject": {
+      "value": {
+        "secrets": [
+          {
+            "secretName": "applicationuser",
+            "secretValue": "OVERWRITTEN BY VSTS"
+          },
+          {
+            "secretName": "StorageAccount",
+            "secretValue": "DefaultEndpointsProtocol=https;AccountName=kfaalphaneugeneralst01;AccountKey=vrNgwewZrwaLvoK974WXyF2LYe0FIuEJfFnbg8Fpwb+Uu0DvR6fKTKuPnsDwCtIQ1e1XOpl7eMqb4uZsdDx1yA==;EndpointSuffix=core.windows.net"
+          }
+        ]
+      }
+    }
+  }
+}
