@@ -9,6 +9,7 @@ Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "ArmDeployment", "ArmDeploym
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{724FC807-7B4C-47B7-950B-FD73C3CE6C22}"
 	ProjectSection(SolutionItems) = preProject
+		LogicApp.PNG = LogicApp.PNG
 		README.md = README.md
 	EndProjectSection
 EndProject
