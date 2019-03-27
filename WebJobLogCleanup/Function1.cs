@@ -2,8 +2,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using Microsoft.Azure.KeyVault;
-using Microsoft.Azure.KeyVault.Models;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -17,7 +15,6 @@ namespace WebJobLogCleanup
 {
     public static class Function1
     {
-        private static string User = System.Environment.GetEnvironmentVariable("applicationuser");
         private static string StorageAccount = System.Environment.GetEnvironmentVariable("StorageAccount");
 
 
@@ -25,6 +22,7 @@ namespace WebJobLogCleanup
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)]HttpRequestMessage req, TraceWriter log)
         {
             log.Info("C# HTTP trigger function processed a request.");
+            log.Info($"Shhhhh.. it's a secret Another: {StorageAccount}");
 
             var blobs = BlobBatch(StorageAccount, "azure-webjobs-hosts", "output-logs", -30);
 

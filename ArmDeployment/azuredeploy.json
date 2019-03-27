@@ -193,9 +193,7 @@
           ],
           "name": "appsettings",
           "properties": {
-            "WEBSITE_ENABLE_SYNC_UPDATE_SITE": "true",
-            "AnotherSecret": "[concat('@Microsoft.KeyVault(SecretUri=', reference('applicationuser').secretUriWithVersion, ')')]",
-            "StorageAccount": "[concat( '@Microsoft.KeyVault(SecretUri=', reference('StorageAccount').secretUriWithVersion, ')')]"
+            "WEBSITE_ENABLE_SYNC_UPDATE_SITE": "true"
 
           },
           "tags": {
@@ -328,9 +326,9 @@
             }
           }
         ],
-            "enabledForDeployment": false,
-            "enabledForDiskEncryption": false,
-            "enabledForTemplateDeployment": false
+        "enabledForDeployment": false,
+        "enabledForDiskEncryption": false,
+        "enabledForTemplateDeployment": false
       },
       "scale": null,
       "tags": {
