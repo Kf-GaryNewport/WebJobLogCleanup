@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.421
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebJobLogCleanup", "FunctionAppTemplate\WebJobLogCleanup.csproj", "{FBB3AA1A-3D33-40CA-9339-E957755A00C8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebJobLogCleanup", "WebJobLogCleanup\WebJobLogCleanup.csproj", "{FBB3AA1A-3D33-40CA-9339-E957755A00C8}"
 EndProject
 Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "ArmDeployment", "ArmDeployment\ArmDeployment.deployproj", "{649E2C32-ED38-4FFE-8F1E-EFB60EDCBC20}"
 EndProject
