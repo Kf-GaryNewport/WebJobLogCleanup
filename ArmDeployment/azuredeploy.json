@@ -41,6 +41,10 @@
     "para_kvSecretsObject": {
       "type": "object",
       "defaultValue": "{}"
+    },
+    "para_appSettingsObject": {
+      "type": "object",
+      "defaultValue": "{}"
     }
   },
   "variables": {
@@ -173,6 +177,10 @@
             {
               "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
               "value": "[reference(concat('microsoft.insights/components/', variables('var_appin_name'))).InstrumentationKey]"
+            },
+            {
+              "name": "WEBSITE_ENABLE_SYNC_UPDATE_SITE",
+              "value": "true"
             }
           ],
           "alwaysOn": false
@@ -193,7 +201,6 @@
           ],
           "name": "appsettings",
           "properties": {
-            "WEBSITE_ENABLE_SYNC_UPDATE_SITE": "true",
             "applicationuser": "[concat('@Microsoft.KeyVault(SecretUri=', reference('applicationuser').secretUriWithVersion, ')')]",
             "StorageAccount": "[concat( '@Microsoft.KeyVault(SecretUri=', reference('StorageAccount').secretUriWithVersion, ')')]"
           },
@@ -207,7 +214,7 @@
         "displayName": "Az Function"
       },
       "type": "Microsoft.Web/sites"
-    },
+    },   
     {
       "apiVersion": "2016-10-01",
       "dependsOn": [
@@ -327,9 +334,9 @@
             }
           }
         ],
-            "enabledForDeployment": false,
-            "enabledForDiskEncryption": false,
-            "enabledForTemplateDeployment": false
+        "enabledForDeployment": false,
+        "enabledForDiskEncryption": false,
+        "enabledForTemplateDeployment": false
       },
       "scale": null,
       "tags": {

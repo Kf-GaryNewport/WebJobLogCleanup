@@ -15,23 +15,23 @@ namespace WebJobLogCleanup
 {
     public static class Function1
     {
-        private static string User = System.Environment.GetEnvironmentVariable("applicationuser");
+        // Get key from KeyVault
         private static string StorageAccount = System.Environment.GetEnvironmentVariable("StorageAccount");
 
-
-        [FunctionName("Function1")]
+        [FunctionName("LogCleanup")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)]HttpRequestMessage req, TraceWriter log)
         {
             log.Info("C# HTTP trigger function processed a request.");
-            log.Info($"Shhhhh.. it's a secret User: {User}");
-            log.Info($"Shhhhh.. it's a secret Another: {StorageAccount}");
 
             var blobs = BlobBatch(StorageAccount, "azure-webjobs-hosts", "output-logs", -30);
+
+            log.Info($"Blob Count : {blobs.Count()}");
 
             return req.CreateResponse(HttpStatusCode.OK, "Count [" + blobs.Count() + "]" + " Deleted [" + BlobBatchDelete(blobs) + "]");
         }
 
-        public static IEnumerable<CloudBlob> BlobBatch(string storageConnectionString, string container, string directory, int days)
+
+        public static IEnumerable<CloudBlockBlob> BlobBatch(string storageConnectionString, string container, string directory, int days)
         {
             // Parse the connection string and return a reference to the storage account.
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(storageConnectionString);
@@ -43,13 +43,14 @@ namespace WebJobLogCleanup
             var cont = blobClient.GetContainerReference(container);
 
             // Query out all the blobs which created after 30 days
-            var blobs = cont.GetDirectoryReference(directory).ListBlobs().OfType<CloudBlob>()
-                    .Where(b => b.Properties.LastModified < new DateTimeOffset(DateTime.Now.AddDays(days)));
+            var blobs = cont.GetDirectoryReference(directory).ListBlobs(true)
+                .OfType<CloudBlockBlob>()
+                .Where(b => b.Properties.LastModified < new DateTimeOffset(DateTime.Now.AddDays(days)));
 
             return blobs;
         }
 
-        public static int BlobBatchDelete(IEnumerable<CloudBlob> blobs)
+        public static int BlobBatchDelete(IEnumerable<CloudBlockBlob> blobs)
         {
             var count = 0;
             // Delete these blobs
@@ -57,14 +58,10 @@ namespace WebJobLogCleanup
             {
                 item.DeleteIfExists();
                 count++;
-
-                if (count == 1000)
-                    break;
             }
 
             return count;
         }
-
 
     }
 }

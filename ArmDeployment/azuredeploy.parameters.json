@@ -27,6 +27,15 @@
           }
         ]
       }
+    },
+    "para_appSettingsObject": {
+      "value": {
+        "settings": [
+          {
+            "secretName": "StorageAccount"
+          }
+        ]
+      }
     }
   }
 }
